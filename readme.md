@@ -16,114 +16,95 @@ It helps you discover live hosts, scan for open ports and services, identify run
 
 ## 🚀 Key Features
 
-- **Multiple Scan Modes:** Active TCP, Stealth/SYN, UDP, and Passive (Shodan/InternetDB) scanning
-- **Host Discovery:** Quickly find live hosts in a subnet before scanning
-- **Service & Version Detection:** Get banners and try to identify software/version
-- **OS & Device Fingerprinting:** Guess the operating system and device type
-- **Vulnerability Lookup:** Map detected services to known CVEs
-- **Flexible Output:** Choose from normal, grepable, JSON, XML, CSV, Markdown, HTML, Excel, or HTTP POST output
-- **Performance Controls:** Parallelism, rate limiting, randomization
-- **Beginner Friendly:** Clean help menu, safe defaults, and practical examples
-- **Extensible Design:** Modular codebase for easy feature addition
+
+- **Active Scanning:** Fast TCP/UDP port scanning, service and version detection, OS detection, aggressive scan mode, output customization.
+- **Passive Reconnaissance:** Collects public data about domains and IPs, passive DNS, GeoIP, whois, and more.
+- **Vulnerability Detection:** Maps detected services to known vulnerabilities and exploits.
 
 ---
 
-## 🛠️ Installation
+## Installation
 
-**Go 1.21+ is required.**
+### Using Go
 
-1. **Clone or Install Directly:**
+You will need Go 1.21 or later installed.
 
-   ```
-   go install github.com/yourusername/wmap/cmd/wmap@latest
-   ```
-
-   This will place the `wmap` binary in your `$GOBIN` or `$GOPATH/bin`.
-
-2. **Or Clone and Build:**
-
-   ```bash
-   git clone https://github.com/yourusername/wmap.git
-   cd wmap/cmd/wmap
-   go build -o wmap
-   ./wmap --help
-   ```
-
-   Replace `yourusername` with your actual GitHub username.
-
----
-
-## 📖 Usage Guide
-
-Run `wmap --help` to see all options.
-
-### Basic Usage
-
-```bash
-wmap [OPTIONS] TARGET
-```
-**TARGET** can be:
-- An IP address (e.g. `192.168.1.10`)
-- A domain name (e.g. `example.com`)
-- A subnet (e.g. `192.168.1.0/24`)
-- A file with targets (`-iL targets.txt`)
-
-### Common Examples
-
-```bash
-# Scan a single host for common TCP ports
-wmap 192.168.1.1 -active -p 22,80,443
-
-# Stealth scan with OS detection
-wmap example.com -stealth --os-detect
-
-# Discover live hosts in a subnet, output as CSV
-wmap 192.168.1.0/24 --ping-sweep -oC results.csv
-
-# Scan a list of hosts for UDP services, output as JSON
-wmap -iL targets.txt -udp -oJ
-
-# Passive scan using Shodan (requires API key)
-wmap scanme.nmap.org -passive --api-key YOUR_SHODAN_KEY
+```sh
+go install github.com/Xwal13/wmap@latest
 ```
 
----
+Make sure `$HOME/go/bin` is in your `PATH`:
+```sh
+export PATH="$PATH:$(go env GOPATH)/bin"
+```
 
-## ⚙️ Main Options Overview
+## Usage
 
-- `-h, --help`              Show help menu
-- `-q`                      Quiet mode (minimal output)
-- `-active`                 Standard TCP scan (default)
-- `-stealth`                Stealth/SYN scan (needs admin/root)
-- `-passive`                Use Shodan data (API key optional)
-- `-udp`                    Scan UDP ports
-- `-iL <file>`              Load targets from a file
-- `-p <ports>`              Ports to scan (e.g. 22,80,443 or 1-1000)
-- `--ping-sweep`            Find live hosts before scanning
-- `-oN/-oG/-oJ/-oX/-oC`     Normal, grepable, JSON, XML, CSV output
-- `--html/--md/--xlsx`      HTML, Markdown, Excel output
-- `--post <url>`            Send results to a server via HTTP POST
-- `--os-detect`             Guess the operating system
-- `--cve-live`              Fetch vulnerabilities online
-- `--service-version`       Detect exact service versions
-- `--concurrency <n>`       Parallel scans (default: 10)
-- `--rate-limit <n>`        Scans per second (default: unlimited)
-- `--randomize`             Randomize scan order
+```sh
+wmap <command> [options] <target or -l <listfile>>
+```
 
----
+### Commands
 
-## 🙏 Legal Notice
+- `active`      : Perform an active scan on the target(s)
+- `passive`     : Perform a passive recon scan
+- `discover`    : Discover live hosts in a network range (CIDR)
+- `update-db`   : Update vulnerability and exploit databases
+- `-h, --help`  : Show the help message
 
-**Scan only networks and systems you have explicit permission to test.**  
-Unauthorized scanning is illegal and unethical.
+### Options (common)
 
----
+- `-l`, `--list <file>`   : Supply a file containing targets (one per line)
+- `-o <file>`             : Output results to a file
+- `-oJ`                   : Output results in JSON format
+- `-q`                    : Quiet mode (minimal output)
+- `-v`                    : Increase verbosity
 
-## 📚 Learn More
+#### Active Scan Options
 
-- See the [help menu](./help.go) or run `wmap --help` for more info and examples.
-- Read the code and contribute via [GitHub Issues](https://github.com/yourusername/wmap/issues)!
+- `-sV`                   : Enable service/version detection
+- `-O`                    : Enable OS detection
+- `-p <ports>`            : Specify ports (comma-separated, e.g., 80,443,8080)
+- `-sU`                   : Enable UDP scan
+- `-T <0-5>`              : Set timing template (0 = paranoid, 5 = insane)
+- `-A`                    : Aggressive scan (OS, version, scripts, traceroute)
+- `--vuln`                : Enable vulnerability detection
+- `--exploit`             : Enable exploit mapping
+- `--no-ping`             : Skip host discovery
+- `--min-rate <n>`        : Minimum packets per second
+- `--max-rate <n>`        : Maximum packets per second
 
----
+#### Passive Scan Options
 
-Happy scanning!
+- `-report`               : Save passive scan report (default: passive_report.txt)
+- `-report-path <file>`   : Set custom report file path
+
+### Examples
+
+```sh
+# Active scan a single host with service detection and OS detection
+wmap active example.com -sV -O
+
+# Active scan a list of targets from a file, scan specific ports, save output to file
+wmap active -l targets.txt -p 80,443,8080 -o results.txt
+
+# Passive scan a single domain and save report
+wmap passive example.com -report
+
+# Passive scan multiple targets from a list
+wmap passive -l domains.txt -report
+
+# Discover live hosts in a subnet
+wmap discover 192.168.1.0/24
+
+# Update vulnerability and exploit databases
+wmap update-db
+```
+
+## Project Status
+
+**Current version:** 1.0.0  
+**Author:** [Xwal13](https://github.com/Xwal13)
+
+wmap is under active development. Feedback, issues, and pull requests are welcome!
+
