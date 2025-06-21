@@ -100,10 +100,6 @@ wmap discover 192.168.1.0/24
 # Update vulnerability and exploit databases
 wmap update-db
 ```
-
-## Project Status
-
-**Current version:** 1.0.0  
 **Author:** [Xwal13](https://github.com/Xwal13)
 
 wmap is under active development. Feedback, issues, and pull requests are welcome!
