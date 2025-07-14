@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	ToolVersion = "1.0.0"
+	ToolVersion = "1.0.2"
 	ToolAuthor  = "Xwal13"
 )
 
@@ -35,7 +35,7 @@ Options for active scan:
   -sU                   Enable UDP scan
   -T <0-5>              Set timing template (0 = paranoid, 5 = insane)
   -A                    Enable aggressive scan (OS, version, script, traceroute)
-  -o <file>             Output results to file
+  -o <file>             Output results to file (CSV per host, greppable)
   -oJ                   Output in JSON format
   -v                    Increase verbosity
   -q                    Quiet mode (minimal output)
@@ -55,7 +55,6 @@ Examples:
 `)
 }
 
-// Returns a slice of targets (hostnames/IPs) given args. If -l/--list is present, reads targets from file.
 func parseTargets(args []string) ([]string, []string, bool) {
 	var targets []string
 	var filteredArgs []string
@@ -99,7 +98,6 @@ func parseTargets(args []string) ([]string, []string, bool) {
 			return nil, nil, false
 		}
 	} else if len(filteredArgs) > 0 && !strings.HasPrefix(filteredArgs[0], "-") {
-		// First non-flag argument is the target
 		targets = append(targets, filteredArgs[0])
 		filteredArgs = filteredArgs[1:]
 	} else {
@@ -122,7 +120,7 @@ func main() {
 			printUsage()
 			os.Exit(1)
 		}
-		fmt.Println(banner) // Show banner at scan start
+		fmt.Println(banner)
 		targets, args, ok := parseTargets(os.Args[2:])
 		if !ok || len(targets) == 0 {
 			printUsage()
@@ -162,13 +160,12 @@ func main() {
 			printUsage()
 			os.Exit(1)
 		}
-		fmt.Println(banner) // Show banner at scan start
+		fmt.Println(banner)
 		targets, args, ok := parseTargets(os.Args[2:])
 		if !ok || len(targets) == 0 {
 			printUsage()
 			os.Exit(1)
 		}
-		// Optional: support for output report
 		saveReport := false
 		reportPath := ""
 		for i := 0; i < len(args); i++ {
@@ -190,7 +187,7 @@ func main() {
 			printUsage()
 			os.Exit(1)
 		}
-		fmt.Println(banner) // Show banner at scan start
+		fmt.Println(banner)
 		targets, _, ok := parseTargets(os.Args[2:])
 		if !ok || len(targets) == 0 {
 			printUsage()
@@ -200,7 +197,7 @@ func main() {
 			discoverHosts(cidr)
 		}
 	case "update-db":
-		fmt.Println(banner) // Show banner at scan start
+		fmt.Println(banner)
 		updateDatabases()
 	case "-h", "--help", "help":
 		printUsage()
