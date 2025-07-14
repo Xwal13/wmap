@@ -33,10 +33,6 @@ You will need Go 1.21 or later installed.
 go install github.com/Xwal13/wmap@latest
 ```
 
-Make sure `$HOME/go/bin` is in your `PATH`:
-```sh
-export PATH="$PATH:$(go env GOPATH)/bin"
-```
 
 ## Usage
 
