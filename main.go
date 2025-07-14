@@ -127,7 +127,8 @@ func main() {
 			os.Exit(1)
 		}
 		updateDatabases()
-		for _, host := range targets {
+		for i, host := range targets {
+			fmt.Printf("\r[+] Scanning target %d/%d: %s\n", i+1, len(targets), host)
 			hostArgs := append([]string{host}, args...)
 			host, opts, ok := parseActiveArgs(hostArgs)
 			if !ok {
@@ -179,7 +180,8 @@ func main() {
 		if saveReport && reportPath == "" {
 			reportPath = "passive_report.txt"
 		}
-		for _, host := range targets {
+		for i, host := range targets {
+			fmt.Printf("\r[+] Scanning target %d/%d: %s\n", i+1, len(targets), host)
 			passiveScanAll(host, saveReport, reportPath)
 		}
 	case "discover":
@@ -193,7 +195,8 @@ func main() {
 			printUsage()
 			os.Exit(1)
 		}
-		for _, cidr := range targets {
+		for i, cidr := range targets {
+			fmt.Printf("\r[+] Discovering hosts %d/%d: %s\n", i+1, len(targets), cidr)
 			discoverHosts(cidr)
 		}
 	case "update-db":
